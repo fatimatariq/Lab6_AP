@@ -1,0 +1,63 @@
+
+//Author : FATIMA TAROQ(697)
+// LAB 6
+
+
+package lab6;
+import java.util.*;
+import java.io.*;
+ 
+public class WorkQueue 
+{
+ int NoOfDirectoriesInTheQueue;  
+  LinkedList<String> LinkList;   //to provide concurrency control, can use non-thread-safe  linked list
+  boolean bool;  // no more directories to be added
+ 
+ 
+ 
+ public synchronized void exit_quit()
+ {
+	 bool = true;
+	  notifyAll();
+	 }
+ 
+ public synchronized String remove_entry()
+ {
+  String string;
+  while (!bool && NoOfDirectoriesInTheQueue == 0)
+  {
+   try
+   {
+    wait();
+   } 
+   catch (Exception e) {};
+  }
+  if (NoOfDirectoriesInTheQueue > 0)
+  {
+	  string = LinkList.remove();
+   NoOfDirectoriesInTheQueue= NoOfDirectoriesInTheQueue-1;
+   notifyAll();
+  } 
+  else
+  {
+	  string = null;
+  }
+  return string;
+ }
+ 
+ public synchronized void add_entry(String string)
+ {
+	 LinkList.add(string);
+	 NoOfDirectoriesInTheQueue= NoOfDirectoriesInTheQueue+1;
+	  notifyAll();
+	 }
+ 
+ public WorkQueue()
+ {
+	 LinkList = new LinkedList<String>();
+	 bool = false;
+	 NoOfDirectoriesInTheQueue = 0;
+	 }
+ 
+ 
+}
